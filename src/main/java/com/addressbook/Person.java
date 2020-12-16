@@ -1,12 +1,24 @@
 package com.addressbook;
 
-public class Person {
+import com.opencsv.bean.CsvBindByPosition;
 
+public class Person {
+    @CsvBindByPosition(position = 0)
     private String firstName;
+
+    @CsvBindByPosition(position = 1)
     private String lastName;
+
+    @CsvBindByPosition(position = 2)
     private String city;
+
+    @CsvBindByPosition(position = 3)
     private String state;
+
+    @CsvBindByPosition(position = 4)
     private long phoneNumber;
+
+    @CsvBindByPosition(position = 5)
     private int zip;
 
     public Person(String firstName, String lastName, String city, String state, long phoneNumber, int zip) {

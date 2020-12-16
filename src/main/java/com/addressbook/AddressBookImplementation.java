@@ -45,7 +45,8 @@ public class AddressBookImplementation {
                                 + "\n11. Sort by State"
                                 + "\n12. Sort by Zip"
                                 + "\n13. Read csv"
-                                + "\n14. Quit");
+                                + "\n14. Read csv to json"
+                                + "\n15. Quit");
                         int value = scanner.nextInt();
 
                         switch (value) {
@@ -89,10 +90,13 @@ public class AddressBookImplementation {
                                 addressbook.readCsv();
                                 break;
                             case 14 :
+                                addressbook.readCsvToJson();
+                                break;
+                            case 15 :
                                 input = 0;
                                 break;
                             default :
-                                System.out.println("Incorrect Choice" + "\nEnter a number between 1 and 13");
+                                System.out.println("Incorrect Choice" + "\nEnter a number between 1 and 14");
                         }
                     }
                     break;

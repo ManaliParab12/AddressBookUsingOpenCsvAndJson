@@ -1,6 +1,10 @@
 package com.addressbook;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.opencsv.CSVWriter;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
@@ -9,10 +13,7 @@ import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AddressBook {
@@ -84,7 +85,7 @@ public class AddressBook {
         System.out.println("Enter Zip");
         int zip = sc.nextInt();
         try {
-          Writer writer = new FileWriter("E:\\FELLOWSHIP\\AddressBook2\\src\\main\\resources\\Addressbook2.csv");
+          Writer writer = new FileWriter("E:\\FELLOWSHIP\\AddressBook2\\src\\main\\resources\\Addressbook.csv");
             StatefulBeanToCsv sbc = new StatefulBeanToCsvBuilder<Person>(writer)
                     .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
                     .build();
@@ -101,7 +102,7 @@ public class AddressBook {
     }
 
     public void readCsv() throws IOException {
-        String file = "E:\\FELLOWSHIP\\AddressBook2\\src\\main\\resources\\Addressbook2.csv";
+        String file = "E:\\FELLOWSHIP\\AddressBook2\\src\\main\\resources\\Addressbook.csv";
         BufferedReader reader = null;
         String line = "";
         try {
@@ -109,7 +110,6 @@ public class AddressBook {
             while ((line = reader.readLine()) != null) {
 
                 String[] row = line.split(",");
-
                 for (String index : row) {
                     System.out.printf("%-10s", index);
                 }
@@ -126,10 +126,36 @@ public class AddressBook {
         }
     }
 
-        public void display () throws FileNotFoundException {
+    public static void readCsvToJson() throws IOException {
 
+        final String SAMPLE_CSV_PATH = "E:\\FELLOWSHIP\\AddressBook2\\src\\main\\resources\\Addressbook.csv";
+        final String SAMPLE_JSON_PATH = "E:\\FELLOWSHIP\\AddressBook2\\src\\main\\resources\\Addressbook.json";
+        try {
+            Reader reader = Files.newBufferedReader(Paths.get(SAMPLE_CSV_PATH));
+            CsvToBeanBuilder<Person> csvToBeanBuilder = new CsvToBeanBuilder<>(reader);
+            csvToBeanBuilder.withType(Person.class);
+            csvToBeanBuilder.withIgnoreLeadingWhiteSpace(true);
+            CsvToBean<Person> csvToBean = csvToBeanBuilder.build();
+            List<Person> personInfo = csvToBean.parse();
+            //Gson gson = new Gson();
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            String json = gson.toJson(personInfo);
+            FileWriter writer = new FileWriter(SAMPLE_JSON_PATH);
+            writer.write(json);
+            writer.close();
+            System.out.println("Json successful");
+            //BufferedReader br = new BufferedReader(new FileReader(SAMPLE_JSON_PATH));
+            //Person[] person = gson.fromJson(br, Person[].class);
+            //List<Person> personList = Arrays.asList(person);
+           System.out.println("Person json : " + new GsonBuilder().setPrettyPrinting().create().toJson(personInfo));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void display () throws FileNotFoundException {
             try {
-                List<String> lines = Files.readAllLines(Paths.get("E:\\FELLOWSHIP\\AddressBook2\\src\\main\\resources\\Addressbook2.csv"));
+                List<String> lines = Files.readAllLines(Paths.get("E:\\FELLOWSHIP\\AddressBook2\\src\\main\\resources\\Addressbook.csv"));
                 for (String line : lines) {
                     line = line.replace("\"", "");
                     System.out.println(line);
@@ -145,8 +171,8 @@ public class AddressBook {
         System.out.println("Enter First Name to update Record");
         String firstName = sc.next();
 
-        for (int i = 0; i < personInfo.size(); i++) {
-            Person person = (Person) personInfo.get(i);
+        for (Person value : personInfo) {
+            Person person = (Person) value;
             if (firstName.equals(person.getFirstName())) {
                 System.out.println("Select any option to edit ");
                 System.out.println("1.Phone Number" + "\n2.Address" + "\n3.Quit");
